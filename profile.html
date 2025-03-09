@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style2.css">
+    <title>Profile</title>
+    <style>
+        .badges-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .badge {
+            text-align: center;
+        }
+        .badge img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+        .user-section h2, .connections h2, .badges-section h2 {
+            font-size: 1.5em;
+        }
+        .user-section p, .connections p {
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Profile</h1>
+
+    <div class="user-section">
+        <h2>User Information</h2>
+        <p>Username: <span id="username">Loading...</span></p>
+        <p>Email: <span id="email">Loading...</span></p>
+    </div>
+
+    <div class="badges-section">
+        <h2>Badges and Awards</h2>
+        <div class="badges-container" id="badges-container">
+            <!-- Badges will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <div class="connections">
+        <h2>Connections</h2>
+        <p>Friends: <span id="friends">Loading...</span></p>
+    </div>
+
+    <script>
+        // User data from usersData.json
+        const userData = [
+            { "name": "User1", "email": "user1@example.com", "badges": ["badges/5rekindls.png", "badges/3TimeCapsule.png"], "friends": ["User2", "Hannah P"] },
+            { "name": "User2", "email": "user2@example.com", "badges": ["badges/1rekindl.png"] , "friends": ["User1", "Emily S"] }
+        ];
+
+        // Function to load user data
+        function loadUserProfile(userId) {
+            // In a real app, you would fetch the user ID from the URL or session
+            // For now, we'll default to the first user (index 0)
+            const user = userData[userId];
+            
+            // Update user information
+            document.getElementById('username').textContent = user.name;
+            document.getElementById('email').textContent = user.email;
+            
+            // Load badges
+            const badgesContainer = document.getElementById('badges-container');
+            badgesContainer.innerHTML = ''; // Clear existing content
+            
+            user.badges.forEach(badge => {
+                const badgeDiv = document.createElement('div');
+                badgeDiv.className = 'badge';
+                
+                const badgeImg = document.createElement('img');
+                badgeImg.src = badge;
+                
+                const badgeName = document.createElement('p');
+                
+                badgeDiv.appendChild(badgeImg);
+                badgeDiv.appendChild(badgeName);
+                badgesContainer.appendChild(badgeDiv);
+            });
+            
+            // Update friends list
+            document.getElementById('friends').textContent = user.friends.join(', ');
+        }
+        
+        // Load the first user profile when the page loads
+        window.onload = function() {
+            loadUserProfile(0); // Load first user (User1)
+            
+            // You could add UI to switch between users
+            // For example, a dropdown or buttons
+        };
+    </script>
+</body>
+</html>

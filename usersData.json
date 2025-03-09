@@ -1,0 +1,5 @@
+
+user1 = [
+    { "name": "User1", "email": "user1@example.com", "badges": ["1rekindl.png"], "friends": ["User2", "Hannah P"] },
+    { "name": "User2", "email": "user2@example.com", "badges": ["5rekindls.png", "3TimeCapsule.png"], "friends": ["User1, Emily S"] }
+]
