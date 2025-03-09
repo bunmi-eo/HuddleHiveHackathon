@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style2.css">
+    <title>Time Capsule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .user-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .time-capsule {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 2px solid #333;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time Capsule</h1>
+    
+    <p>You and your friend have found a time capsule that you buried 5 years ago. What do you find inside?</p>
+    
+    <div id="user1Section" class="user-section">
+        <h2>Your Turn</h2>
+        <div id="user1Questions">
+            <div>
+                <p>Would you like to add a memory?</p>
+                <button onclick="addItem('user1', 'memory')">Yes</button>
+                <button onclick="nextQuestion('user1', 'memory')">No</button>
+                <div id="user1memoryInput" class="hidden">
+                    <p>What memory would you like to add?</p>
+                    <input type="text" id="user1memoryText">
+                    <button onclick="saveItem('user1', 'memory')">Save</button>
+                </div>
+            </div>
+            
+            <div id="user1connectionQuestion" class="hidden">
+                <p>Would you like to add a special connection?</p>
+                <button onclick="addItem('user1', 'connection')">Yes</button>
+                <button onclick="nextQuestion('user1', 'connection')">No</button>
+                <div id="user1connectionInput" class="hidden">
+                    <p>What connection would you like to add?</p>
+                    <input type="text" id="user1connectionText">
+                    <button onclick="saveItem('user1', 'connection')">Save</button>
+                </div>
+            </div>
+            
+            <div id="user1songQuestion" class="hidden">
+                <p>Would you like to add a song?</p>
+                <button onclick="addItem('user1', 'song')">Yes</button>
+                <button onclick="nextQuestion('user1', 'song')">No</button>
+                <div id="user1songInput" class="hidden">
+                    <p>Enter the song name:</p>
+                    <input type="text" id="user1songText">
+                    <button onclick="saveItem('user1', 'song')">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="user2Section" class="user-section hidden">
+        <h2> Hannah P from <b>School</b> also added to the time capsule. </h2>
+    </div>
+    
+    <div id="viewCapsuleSection" class="hidden">
+        <h2>View Time Capsule</h2>
+        <p>Would you like to see what's inside the time capsule?</p>
+        <button onclick="displayCapsuleContents()">Yes</button>
+        <button onclick="resetTimeCapsule()">Start Over</button>
+    </div>
+    
+    <div id="capsuleContents" class="time-capsule hidden">
+        <h2>===== TIME CAPSULE CONTENTS =====</h2>
+        <div id="contents"></div>
+        
+        <button onclick="resetTimeCapsule()">Start Over</button>
+        
+    </div>
+
+    <script>
+        // Equivalent to the Java CapsuleItem class
+        class CapsuleItem {
+            constructor(user, type, content) {
+                this.user = user;
+                this.type = type;
+                this.content = content;
+            }
+        }
+
+        // Store capsule items
+        let capsuleItems = [];
+        
+        // Try to load existing data from localStorage
+        function loadExistingData() {
+            const savedData = localStorage.getItem('timeCapsuleData');
+            if (savedData) {
+                capsuleItems = JSON.parse(savedData);
+            }
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('timeCapsuleData', JSON.stringify(capsuleItems));
+        }
+        
+        // Show the input field for an item
+        function addItem(user, type) {
+            document.getElementById(user + type + 'Input').classList.remove('hidden');
+        }
+        
+        // Move to the next question
+        function nextQuestion(user, currentType) {
+            if (currentType === 'memory') {
+                document.getElementById(user + 'connectionQuestion').classList.remove('hidden');
+            } else if (currentType === 'connection') {
+                document.getElementById(user + 'songQuestion').classList.remove('hidden');
+            } else if (currentType === 'song') {
+                if (user === 'user1') {
+                    // Move to user2's turn
+                    document.getElementById('user1Section').classList.add('hidden');
+                    document.getElementById('user2Section').classList.remove('hidden');
+                    
+                    // Add Hannah's items when moving to user2's section
+                    addHannahsItems();
+                    
+                    // After adding Hannah's items, move to view section
+                    setTimeout(function() {
+                        document.getElementById('user2Section').classList.add('hidden');
+                        document.getElementById('viewCapsuleSection').classList.remove('hidden');
+                    }, 1000); // Short delay to simulate Hannah's items being added
+                } else {
+                    // End of inputs, show view option
+                    document.getElementById('user2Section').classList.add('hidden');
+                    document.getElementById('viewCapsuleSection').classList.remove('hidden');
+                }
+            }
+        }
+        
+        // Save an item to the capsule
+        function saveItem(user, type, content = null) {
+            if (!content) {
+                content = document.getElementById(user + type + 'Text').value.trim();
+            }
+            
+            if (content) {
+                capsuleItems.push(new CapsuleItem(user, type, content));
+                saveData();
+            }
+            
+            // Only move to next question and hide input if this is a user interaction (not a hardcoded item)
+            if (!content) {
+                // Move to next question
+                nextQuestion(user, type);
+                
+                // Hide the input
+                document.getElementById(user + type + 'Input').classList.add('hidden');
+            }
+        }
+        
+        // Function to add Hannah's hardcoded items
+        function addHannahsItems() {
+            // Add hardcoded items for Hannah (user2)
+            capsuleItems.push(new CapsuleItem('user2', 'memory', 'The time we went to the beach'));
+            capsuleItems.push(new CapsuleItem('user2', 'connection', 'Our first day of school'));
+            capsuleItems.push(new CapsuleItem('user2', 'song', 'Happy'));
+            saveData();
+        }
+        
+        // Display the contents of the time capsule
+        function displayCapsuleContents() {
+            const contentsDiv = document.getElementById('contents');
+            contentsDiv.innerHTML = '';
+            
+            if (capsuleItems.length === 0) {
+                contentsDiv.innerHTML = '<p>The time capsule is empty!</p>';
+            } else {
+                capsuleItems.forEach(item => {
+                    const displayUser = item.user === 'user1' ? 'You' : 'Hannah P';
+                    const p = document.createElement('p');
+                    p.textContent = `${displayUser} added a ${item.type}: ${item.content}`;
+                    contentsDiv.appendChild(p);
+                });
+            }
+            
+            document.getElementById('viewCapsuleSection').classList.add('hidden');
+            document.getElementById('capsuleContents').classList.remove('hidden');
+        }
+        
+        // Reset the time capsule
+        function resetTimeCapsule() {
+            capsuleItems = [];
+            saveData();
+            location.reload();
+        }
+        
+        // Load data when the page loads
+        window.onload = function() {
+            loadExistingData();
+        };
+    </script>
+</body>
+</html>
