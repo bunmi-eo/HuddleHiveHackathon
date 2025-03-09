@@ -94,7 +94,7 @@
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #4CAF50;
+            background-color: #5ce54d;
             color: white;
             border: none;
             border-radius: 5px;
@@ -172,7 +172,7 @@
             color: #888;
         }
         .filter-container {
-            width: 250px; /* Increase width to display text properly */
+            width: 300px;
             background: white;
             padding: 8px;
             border: 1px solid #ddd;
@@ -181,27 +181,27 @@
         }
 
         .filter-container select {
-            width: 100%; /* Make the select element fit the container */
+            width: 150px;
             padding: 8px;
-            font-size: 16px; /* Increase font size for readability */
+            font-size: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
             background-color: #fff;
         }
 
         #conversation-filter {
-            width: 100%; /* Ensure the select element is fully extended */
+            width: 60%; /* Ensure the select element is fully extended */
         }
 
         [data-id="node1"] {
-            background-color: #FFD700 !important; /* Gold for Lily */
+            background-color: #FFD700 !important;
         }
         [data-id="node3"] {
-            background-color: #98FB98 !important; /* PaleGreen for James */
+            background-color: #98FB98 !important;
         }
 
         [data-id="node4"] {
-            background-color: #DDA0DD !important; /* Plum for Heather */
+            background-color: #DDA0DD !important;
         }
     </style>
 </head>
@@ -211,17 +211,16 @@
     <h2 class="text-center mt-3 mb-4">Interactive Mind Map with Conversations</h2>
 
     <div class="page-container">
-        <!-- Left Panel - Mind Map -->
-
+        <!-- Left Panel-->
         <div class="left-panel">
             <div class="filter-container">
                 <select id="conversation-filter" class="form-select w-auto">
-                    <option value="mind_map.html">Hannah Conversation   </option>
-                    <option value="multipeeps_mindmap.html">School Friend Group  </option>
+                    <option value="mind_map.html">Hannah Conversation ___ </option>
+                    <option value="multipeeps_mindmap.html">School Friend Group ___ </option>
                 </select>
             </div>
             <br>
-            <h3>Mind Map: Reconnecting with Friends</h3>
+            <h3>Drop a moment, pick up a conversation!</h3>
             <p>Select a bubble to start a conversation or add a new activity</p>
             <div id="mind-map-container"></div>
             <button class="add-activity-btn" id="add-activity-btn">Add New Activity</button>
@@ -232,7 +231,7 @@
             <h3>Conversation</h3>
             <div id="conversation-area">
                 <div class="no-selection-message" id="no-selection">
-                    <p>Select a bubble from the mind map to view or start a conversation</p>
+                    <p>Select a bubble from the mind map to view and start a conversation</p>
                 </div>
                 <div id="conversation-container" class="conversation-container" style="display: none;">
                     <div class="conversation-header" id="conversation-title">Conversation Title</div>
@@ -305,7 +304,7 @@
         // Create center node
         const centerNode = document.createElement('div');
         centerNode.className = 'node center-node';
-        centerNode.textContent = 'Reconnecting with Friends';
+        centerNode.textContent = 'ReKindl';
         centerNode.style.left = (centerX - 75) + 'px';
         centerNode.style.top = (centerY - 75) + 'px';
         container.appendChild(centerNode);
@@ -349,8 +348,6 @@
 
             // Update conversation title
             conversationTitle.textContent = `Conversation about: ${nodeName}`;
-
-            // Clear previous messages
             messagesContainer.innerHTML = '';
 
             // Show conversation container, hide no selection message
@@ -432,7 +429,7 @@
 
         // Function to add new activity
         function addActivity() {
-            const activityName = prompt("Enter a new activity name:");
+            const activityName = prompt("Enter a new bubble:");
             if (activityName && activityName.trim() !== '') {
                 // Calculate new angle (evenly distribute nodes)
                 const newAngle = activities.length > 0 ?
@@ -505,9 +502,15 @@
             setTimeout(() => {
                 if (selectedNode && conversations[selectedNode.id]) {
                     // Get friend name from the node name
-                    let friendName = "Friend";
+                    let friendName = "Heather";
                     if (selectedNode.name.includes("Hannah P")) {
                         friendName = "Hannah P";
+                    } else if (selectedNode.name.includes("James")) {
+                        friendName = James;
+                    } else if (selectedNode.name.includes("Lily")) {
+                        friendName = Lily;
+                    } else if (selectedNode.name.includes("Heather")) {
+                        friendName = Heather;
                     }
 
                     // Create response message
@@ -537,7 +540,7 @@
                 } else {
                     return "I'd be happy to show you some of my finished pieces next time we meet up! Maybe we could craft together sometime?";
                 }
-            } else if (nodeId === "node2") { // Travel to Asia
+            } else if (nodeId === "node2") { // Me travelling to Asia
                 if (message.toLowerCase().includes("cost") || message.toLowerCase().includes("budget")) {
                     return "Japan can be pricey, but Thailand and Vietnam are very budget-friendly. You can get by on $30-50 a day including accommodation in Southeast Asia.";
                 } else if (message.toLowerCase().includes("food") || message.toLowerCase().includes("eat")) {
@@ -593,7 +596,7 @@
 <script>
     document.getElementById('conversation-filter').addEventListener('change', function() {
         const selectedPage = this.value;
-        window.location.href = selectedPage; // Redirect to selected page
+        window.location.href = selectedPage;
     });
 </script>
 
