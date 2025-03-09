@@ -52,8 +52,8 @@
     <script>
         // User data from usersData.json
         const userData = [
-            { "name": "User1", "email": "user1@example.com", "badges": ["badges/5rekindls.png", "badges/3TimeCapsule.png"], "friends": ["User2", "Hannah P"] },
-            { "name": "User2", "email": "user2@example.com", "badges": ["badges/1rekindl.png"] , "friends": ["User1", "Emily S"] }
+            { "name": "User1", "email": "user1@example.com", "badges": ["5rekindls.png", "3TimeCapsule.png"], "friends": ["User2", "Hannah P"] },
+            { "name": "User2", "email": "user2@example.com", "badges": ["1rekindl.png"] , "friends": ["User1", "Emily S"] }
         ];
 
         // Function to load user data
@@ -61,37 +61,37 @@
             // In a real app, you would fetch the user ID from the URL or session
             // For now, we'll default to the first user (index 0)
             const user = userData[userId];
-            
+
             // Update user information
             document.getElementById('username').textContent = user.name;
             document.getElementById('email').textContent = user.email;
-            
+
             // Load badges
             const badgesContainer = document.getElementById('badges-container');
             badgesContainer.innerHTML = ''; // Clear existing content
-            
+
             user.badges.forEach(badge => {
                 const badgeDiv = document.createElement('div');
                 badgeDiv.className = 'badge';
-                
+
                 const badgeImg = document.createElement('img');
                 badgeImg.src = badge;
-                
+
                 const badgeName = document.createElement('p');
-                
+
                 badgeDiv.appendChild(badgeImg);
                 badgeDiv.appendChild(badgeName);
                 badgesContainer.appendChild(badgeDiv);
             });
-            
+
             // Update friends list
             document.getElementById('friends').textContent = user.friends.join(', ');
         }
-        
+
         // Load the first user profile when the page loads
         window.onload = function() {
             loadUserProfile(0); // Load first user (User1)
-            
+
             // You could add UI to switch between users
             // For example, a dropdown or buttons
         };
