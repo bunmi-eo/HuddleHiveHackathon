@@ -68,7 +68,8 @@
                 <div id="user1memoryInput" class="hidden">
                     <p>What memory would you like to add?</p>
                     <input type="text" id="user1memoryText">
-                    <button onclick="saveItem('user1', 'memory')">Save</button>
+                    <button onclick="saveItem('user1', 'memory'); nextQuestion('user1', 'memory')">Save</button>
+
                 </div>
             </div>
             
@@ -79,7 +80,7 @@
                 <div id="user1connectionInput" class="hidden">
                     <p>What connection would you like to add?</p>
                     <input type="text" id="user1connectionText">
-                    <button onclick="saveItem('user1', 'connection')">Save</button>
+                    <button onclick="saveItem('user1', 'connection'); nextQuestion('user1', 'connection')">Save</button>
                 </div>
             </div>
             
@@ -90,7 +91,7 @@
                 <div id="user1songInput" class="hidden">
                     <p>Enter the song name:</p>
                     <input type="text" id="user1songText">
-                    <button onclick="saveItem('user1', 'song')">Save</button>
+                    <button onclick="saveItem('user1', 'song'); nextQuestion('user1', 'song')">Save</button>
                 </div>
             </div>
         </div>
