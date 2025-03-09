@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleships Game</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00008b;
+        }
+        
+        #gameBoard {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            grid-template-rows: repeat(10, 30px);
+            gap: 2px;
+            margin: 20px auto;
+        }
+        
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #add8e6;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .coordinates {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            width: 320px;
+        }
+        
+        .coordinate-input {
+            width: 40px;
+            text-align: center;
+        }
+        
+        #gameLog {
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: white;
+        }
+        
+        button {
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #36648b;
+        }
+        
+        .ship-cell {
+            background-color: #4682b4;
+        }
+        
+        .hit-cell {
+            background-color: #ff6347;
+        }
+        
+        .miss-cell {
+            background-color: #d3d3d3;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Battleships Game</h1>
+    
+    <div class="game-info">
+        <div>Player 1 Ships: <span id="player1Ships">5</span></div>
+        <div>Player 2 Ships: <span id="player2Ships">5</span></div>
+        <div>Current Turn: <span id="currentTurn">Player 1</span></div>
+    </div>
+    
+    <div id="gameLog">
+        <p>**** Welcome to Battle Ships game ****</p>
+        <p>Right now, sea is empty</p>
+    </div>
+    
+    <div id="coordinateInputs" class="coordinates">
+        <div>
+            <label for="xCoord">X:</label>
+            <input type="number" id="xCoord" class="coordinate-input" min="0" max="9" value="0">
+        </div>
+        <div>
+            <label for="yCoord">Y:</label>
+            <input type="number" id="yCoord" class="coordinate-input" min="0" max="9" value="0">
+        </div>
+        <button id="actionButton">Place Ship</button>
+    </div>
+    
+    <div id="gameContainer">
+        <!-- Row numbers on the left -->
+        <div style="display: flex; margin-left: 20px;">
+            <div style="width: 20px; text-align: right; margin-right: 10px;">
+                <div style="height: 30px; display: flex; align-items: center;"></div>
+                <div style="height: 30px; display: flex; align-items: center;">0</div>
+                <div style="height: 30px; display: flex; align-items: center;">1</div>
+                <div style="height: 30px; display: flex; align-items: center;">2</div>
+                <div style="height: 30px; display: flex; align-items: center;">3</div>
+                <div style="height: 30px; display: flex; align-items: center;">4</div>
+                <div style="height: 30px; display: flex; align-items: center;">5</div>
+                <div style="height: 30px; display: flex; align-items: center;">6</div>
+                <div style="height: 30px; display: flex; align-items: center;">7</div>
+                <div style="height: 30px; display: flex; align-items: center;">8</div>
+                <div style="height: 30px; display: flex; align-items: center;">9</div>
+            </div>
+            
+            <div>
+                <!-- Column numbers on top -->
+                <div style="display: flex; margin-bottom: 5px;">
+                    <div style="width: 30px; text-align: center;">0</div>
+                    <div style="width: 30px; text-align: center;">1</div>
+                    <div style="width: 30px; text-align: center;">2</div>
+                    <div style="width: 30px; text-align: center;">3</div>
+                    <div style="width: 30px; text-align: center;">4</div>
+                    <div style="width: 30px; text-align: center;">5</div>
+                    <div style="width: 30px; text-align: center;">6</div>
+                    <div style="width: 30px; text-align: center;">7</div>
+                    <div style="width: 30px; text-align: center;">8</div>
+                    <div style="width: 30px; text-align: center;">9</div>
+                </div>
+                
+                <!-- Game board -->
+                <div id="gameBoard"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Battleships game converted from Java to JavaScript for web browsers
+        const Battleships = {
+            numRows: 10,
+            numCols: 10,
+            player1Ships: 5,
+            player2Ships: 5,
+            grid: Array(10).fill().map(() => Array(10).fill(" ")),
+            currentPhase: 'player1Deploy', // Phases: player1Deploy, player2Deploy, player1Turn, player2Turn, gameOver
+            shipsPlaced: 0
+        };
+        
+        // DOM elements
+        const gameBoard = document.getElementById('gameBoard');
+        const gameLog = document.getElementById('gameLog');
+        const actionButton = document.getElementById('actionButton');
+        const xCoord = document.getElementById('xCoord');
+        const yCoord = document.getElementById('yCoord');
+        const player1ShipsDisplay = document.getElementById('player1Ships');
+        const player2ShipsDisplay = document.getElementById('player2Ships');
+        const currentTurnDisplay = document.getElementById('currentTurn');
+        
+        // Initialize the game board
+        function initializeBoard() {
+            gameBoard.innerHTML = '';
+            for (let i = 0; i < Battleships.numRows; i++) {
+                for (let j = 0; j < Battleships.numCols; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.x = i;
+                    cell.dataset.y = j;
+                    cell.addEventListener('click', () => {
+                        xCoord.value = i;
+                        yCoord.value = j;
+                    });
+                    gameBoard.appendChild(cell);
+                }
+            }
+            updateBoardDisplay();
+        }
+        
+        // Update the visual display of the board
+        function updateBoardDisplay() {
+            for (let i = 0; i < Battleships.numRows; i++) {
+                for (let j = 0; j < Battleships.numCols; j++) {
+                    const cellSelector = `.cell[data-x="${i}"][data-y="${j}"]`;
+                    const cell = document.querySelector(cellSelector);
+                    
+                    if (cell) {
+                        // Clear any existing classes
+                        cell.classList.remove('ship-cell', 'hit-cell', 'miss-cell');
+                        
+                        // Set content and class based on grid state
+                        switch (Battleships.grid[i][j]) {
+                            case 'S':
+                                cell.textContent = 'S';
+                                cell.classList.add('ship-cell');
+                                break;
+                            case 'P2':
+                                cell.textContent = 'P2';
+                                cell.classList.add('ship-cell');
+                                break;
+                            case '!':
+                                cell.textContent = '!';
+                                cell.classList.add('hit-cell');
+                                break;
+                            case '-':
+                                cell.textContent = '-';
+                                cell.classList.add('miss-cell');
+                                break;
+                            case 'x':
+                                cell.textContent = 'x';
+                                cell.classList.add('hit-cell');
+                                break;
+                            default:
+                                cell.textContent = '';
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Add message to the game log
+        function logMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = message;
+            gameLog.appendChild(p);
+            gameLog.scrollTop = gameLog.scrollHeight;
+        }
+        
+        // Handle action button clicks based on current game phase
+        actionButton.addEventListener('click', () => {
+            const x = parseInt(xCoord.value);
+            const y = parseInt(yCoord.value);
+            
+            if (isNaN(x) || isNaN(y) || x < 0 || x >= Battleships.numRows || y < 0 || y >= Battleships.numCols) {
+                logMessage(`You can't place ships outside the ${Battleships.numRows} by ${Battleships.numCols} grid`);
+                return;
+            }
+            
+            switch (Battleships.currentPhase) {
+                case 'player1Deploy':
+                    handlePlayer1Deploy(x, y);
+                    break;
+                case 'player2Deploy':
+                    handlePlayer2Deploy(x, y);
+                    break;
+                case 'player1Turn':
+                    handlePlayer1Turn(x, y);
+                    break;
+                case 'player2Turn':
+                    handlePlayer2Turn(x, y);
+                    break;
+            }
+        });
+        
+        // Handle Player 1 ship deployment
+        function handlePlayer1Deploy(x, y) {
+            if (Battleships.grid[x][y] === " ") {
+                Battleships.grid[x][y] = "S";
+                Battleships.shipsPlaced++;
+                logMessage(`You placed ship at (${x}, ${y})`);
+                
+                if (Battleships.shipsPlaced >= 5) {
+                    Battleships.currentPhase = 'player2Deploy';
+                    Battleships.shipsPlaced = 0;
+                    actionButton.textContent = "Place Ship";
+                    currentTurnDisplay.textContent = "Hannah P (Ship Placement)";
+                    logMessage("Hannah P, deploy your ships:");
+                }
+                
+                updateBoardDisplay();
+            } else {
+                logMessage("You can't place two or more ships on the same location");
+            }
+        }
+        
+        // Handle Player 2 ship deployment
+        function handlePlayer2Deploy(x, y) {
+            if (Battleships.grid[x][y] === " ") {
+                Battleships.grid[x][y] = "P2";
+                Battleships.shipsPlaced++;
+                logMessage(`Hannah P placed ship at (${x}, ${y})`);
+                
+                if (Battleships.shipsPlaced >= 5) {
+                    Battleships.currentPhase = 'player1Turn';
+                    actionButton.textContent = "Fire!";
+                    currentTurnDisplay.textContent = "You";
+                    logMessage("\nLet the battle begin!");
+                    logMessage("\nYOUR TURN");
+                }
+                
+                updateBoardDisplay();
+            } else {
+                logMessage("You can't place ships on an occupied location!");
+            }
+        }
+        
+        // Handle Player 1's attack turn
+        function handlePlayer1Turn(x, y) {
+            if (Battleships.grid[x][y] === "P2") {
+                logMessage(`Boom! You sunk Hannah P's ship at (${x}, ${y})!`);
+                Battleships.grid[x][y] = "!";
+                Battleships.player2Ships--;
+                player2ShipsDisplay.textContent = Battleships.player2Ships;
+            } else if (Battleships.grid[x][y] === "S") {
+                logMessage(`Oh no! You sunk their own ship at (${x}, ${y})!`);
+                Battleships.grid[x][y] = "x";
+                Battleships.player1Ships--;
+                player1ShipsDisplay.textContent = Battleships.player1Ships;
+            } else if (Battleships.grid[x][y] === " ") {
+                logMessage(`You missed at (${x}, ${y})`);
+                Battleships.grid[x][y] = "-";
+            } else {
+                logMessage("You've already fired at this location!");
+                return;
+            }
+            
+            updateBoardDisplay();
+            
+            // Check if game is over
+            if (Battleships.player1Ships <= 0 || Battleships.player2Ships <= 0) {
+                endGame();
+            } else {
+                Battleships.currentPhase = 'player2Turn';
+                currentTurnDisplay.textContent = "Player 2";
+                logMessage("\nYOUR TURN");
+            }
+        }
+        
+        // Handle Player 2's attack turn
+        function handlePlayer2Turn(x, y) {
+            if (Battleships.grid[x][y] === "S") {
+                logMessage(`Boom! Hannah P sunk Player 1's ship at (${x}, ${y})!`);
+                Battleships.grid[x][y] = "!";
+                Battleships.player1Ships--;
+                player1ShipsDisplay.textContent = Battleships.player1Ships;
+            } else if (Battleships.grid[x][y] === "P2") {
+                logMessage(`Oh no! Hannah P sunk their own ship at (${x}, ${y})!`);
+                Battleships.grid[x][y] = "x";
+                Battleships.player2Ships--;
+                player2ShipsDisplay.textContent = Battleships.player2Ships;
+            } else if (Battleships.grid[x][y] === " ") {
+                logMessage(`Hannah P missed at (${x}, ${y})`);
+                Battleships.grid[x][y] = "-";
+            } else {
+                logMessage("You've already fired at this location!");
+                return;
+            }
+            
+            updateBoardDisplay();
+            
+            // Check if game is over
+            if (Battleships.player1Ships <= 0 || Battleships.player2Ships <= 0) {
+                endGame();
+            } else {
+                Battleships.currentPhase = 'player1Turn';
+                currentTurnDisplay.textContent = "YOU";
+                logMessage("\nYOUR TURN");
+            }
+        }
+        
+        // End the game and declare a winner
+        function endGame() {
+            Battleships.currentPhase = 'gameOver';
+            actionButton.disabled = true;
+            
+            if (Battleships.player1Ships <= 0 && Battleships.player2Ships <= 0) {
+                logMessage("It's a draw! Both players have lost all their ships.");
+            } else if (Battleships.player1Ships <= 0) {
+                logMessage("Hannah P wins! You have lost all your ships.");
+            } else {
+                logMessage("You win! Hannah P has lost all their ships.");
+            }
+            
+            // Add restart button
+            const restartButton = document.createElement('button');
+            restartButton.textContent = "Restart Game";
+            restartButton.addEventListener('click', () => {
+                location.reload();
+            });
+            document.querySelector('.coordinates').appendChild(restartButton);
+        }
+        
+        // Initialize the game
+        function initGame() {
+            initializeBoard();
+            Battleships.currentPhase = 'player1Deploy';
+            Battleships.player1Ships = 5;
+            Battleships.player2Ships = 5;
+            Battleships.shipsPlaced = 0;
+            
+            player1ShipsDisplay.textContent = Battleships.player1Ships;
+            player2ShipsDisplay.textContent = Battleships.player2Ships;
+            currentTurnDisplay.textContent = "YOUR (Ship Placement)";
+            
+            actionButton.textContent = "Place Ship";
+            logMessage("Deploy your ships:");
+        }
+        
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
