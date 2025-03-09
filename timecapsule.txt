@@ -1,4 +1,0 @@
-user1|memory|picnic day
-user1|song|songname
-user2|connection|music
-user2|song|song2
