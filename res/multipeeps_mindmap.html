@@ -193,7 +193,16 @@
             width: 100%; /* Ensure the select element is fully extended */
         }
 
+        [data-id="node1"] {
+            background-color: #FFD700 !important; /* Gold for Lily */
+        }
+        [data-id="node3"] {
+            background-color: #98FB98 !important; /* PaleGreen for James */
+        }
 
+        [data-id="node4"] {
+            background-color: #DDA0DD !important; /* Plum for Heather */
+        }
     </style>
 </head>
 <body>
@@ -258,27 +267,37 @@
         // Store of conversations by node ID
         const conversations = {
             'node1': [
-                { author: 'You', text: 'I heard you went to Japan! How was it?', time: '10:30 AM', isUser: true },
-                { author: 'Hannah P', text: 'It was amazing! I visited Tokyo and Kyoto.', time: '10:35 AM', isUser: false },
-                { author: 'You', text: 'Did you try the street food?', time: '10:36 AM', isUser: true },
-                { author: 'Hannah P', text: 'Yes! The takoyaki was my favorite!', time: '10:40 AM', isUser: false }
+                { author: 'You', text: 'Lily, I heard you started embroidery classes! How are you finding it?', time: '10:30 AM', isUser: true },
+                { author: 'Lily', text: 'Yes! I\'m loving it so far. It\'s so relaxing and creative.', time: '10:35 AM', isUser: false },
+                { author: 'You', text: 'What kind of projects have you been working on?', time: '10:36 AM', isUser: true },
+                { author: 'Lily', text: 'I started with some simple floral patterns, but now I\'m working on a custom design for a jacket!', time: '10:40 AM', isUser: false }
             ],
             'node2': [
-                { author: 'Hannah P', text: 'Omg! Cave diving sounds dangerous!', time: '11:15 AM', isUser: false },
-                { author: 'You', text: 'It\'s actually quite safe with proper training.', time: '11:17 AM', isUser: true },
-                { author: 'Hannah P', text: 'Uhuh, yeah but you could maybe just not do that', time: '11:20 AM', isUser: false }
+                { author: 'You', text: 'I\'ve been thinking about taking a trip to Asia. Any recommendations?', time: '11:15 AM', isUser: true },
+                { author: 'Melanie', text: 'Japan and Thailand are amazing! When are you planning to go?', time: '11:17 AM', isUser: false },
+                { author: 'You', text: 'Hopefully this fall. How long would you recommend for a first visit?', time: '11:20 AM', isUser: true },
+                { author: 'Melanie', text: 'For Japan, at least 10 days to see Tokyo and Kyoto. Thailand needs about the same to experience both Bangkok and the islands.', time: '11:23 AM', isUser: false }
             ],
             'node3': [
-                { author: 'You', text: 'What kind of hobby are you looking for?', time: '1:05 PM', isUser: true },
-                { author: 'Hannah P', text: 'Something creative but not too expensive.', time: '1:10 PM', isUser: false }
+                { author: 'You', text: 'James, how\'s the running coming along? Ready to start again?', time: '1:05 PM', isUser: true },
+                { author: 'James', text: 'I keep putting it off! Maybe having an accountability partner would help.', time: '1:10 PM', isUser: false },
+                { author: 'You', text: 'I could join you for weekend runs if that would help?', time: '1:12 PM', isUser: true },
+                { author: 'James', text: 'That would be perfect! Let\'s start this Saturday morning. Early enough to beat the heat?', time: '1:15 PM', isUser: false }
+            ],
+            'node4': [
+                { author: 'You', text: 'Congrats on the new tech job, Heather! How\'s it going so far?', time: '2:30 PM', isUser: true },
+                { author: 'Heather', text: 'Thanks! It\'s challenging but exciting. Learning so many new things!', time: '2:35 PM', isUser: false },
+                { author: 'You', text: 'What kind of projects are you working on?', time: '2:37 PM', isUser: true },
+                { author: 'Heather', text: 'Mostly AI integration with healthcare data. The learning curve is steep but my team is supportive.', time: '2:40 PM', isUser: false }
             ]
         };
 
         // Initial activities
         const activities = [
-            { id: 'node1', name: 'Hannah P went to Japan', angle: 0 },
-            { id: 'node2', name: 'I started cave diving', angle: 120 },
-            { id: 'node3', name: 'Hannah P is looking for a new hobby', angle: 240 }
+            { id: 'node1', name: 'Lily started embroidery classes', angle: 0 },
+            { id: 'node2', name: 'I want to explore Asia', angle: 120 },
+            { id: 'node3', name: 'James needs to start going running again', angle: 240 },
+            { id: 'node4', name: 'Heather started a new tech job', angle: 360 }
         ];
 
         let selectedNode = null;
@@ -506,24 +525,57 @@
                 }
             }, 1500);
         }
-
-        // Generate a simple response based on the message
-        function generateResponse(message, context) {
-            const responses = [
-                "That's interesting! Tell me more.",
-                "I hadn't thought about it that way before.",
-                "Thanks for sharing that with me.",
-                "I'd love to hear more about that sometime.",
-                "That reminds me of something I experienced too!"
-            ];
-
-            if (context.includes("Japan")) {
-                return "Japan was amazing! The food, culture, and people were all incredible. We should plan a trip together sometime!";
-            } else if (context.includes("cave diving")) {
-                return "Hmm, perhaps if you try it in a safe place fir";
-            } else if (context.includes("hobby")) {
-                return "I've been thinking about trying pottery. Have you ever done that?";
+        function generateResponse(message, nodeId) {
+            // Personalised responses based on the context/person
+            if (nodeId === "node1") { // Lily and embroidery
+                if (message.toLowerCase().includes("difficult")) {
+                    return "It was challenging at first! My first few stitches were a mess, but practice makes perfect. The instructor is really patient.";
+                } else if (message.toLowerCase().includes("class") || message.toLowerCase().includes("teach")) {
+                    return "The classes are twice a week at the community center. Each session is about 2 hours. Would you be interested in joining?";
+                } else if (message.toLowerCase().includes("cost") || message.toLowerCase().includes("expensive")) {
+                    return "It's actually quite affordable! $45 for four sessions, and they provide all the basic materials to get started.";
+                } else {
+                    return "I'd be happy to show you some of my finished pieces next time we meet up! Maybe we could craft together sometime?";
+                }
+            } else if (nodeId === "node2") { // Travel to Asia
+                if (message.toLowerCase().includes("cost") || message.toLowerCase().includes("budget")) {
+                    return "Japan can be pricey, but Thailand and Vietnam are very budget-friendly. You can get by on $30-50 a day including accommodation in Southeast Asia.";
+                } else if (message.toLowerCase().includes("food") || message.toLowerCase().includes("eat")) {
+                    return "The street food in Thailand is incredible! Make sure to try pad thai from a street vendor and mango sticky rice for dessert. In Japan, don't miss the ramen shops!";
+                } else if (message.toLowerCase().includes("safe")) {
+                    return "Most tourist areas in Asia are very safe. Just use common sense like you would anywhere. Japan is one of the safest countries in the world!";
+                } else {
+                    return "If you're planning a trip, I can send you some suggested itineraries and must-see places. Southeast Asia is amazing for first-time travelers!";
+                }
+            } else if (nodeId === "node3") { // James and running
+                if (message.toLowerCase().includes("morning") || message.toLowerCase().includes("time")) {
+                    return "I'm thinking 7:30am would be good - early enough to beat the heat but not crack-of-dawn early. How does that sound?";
+                } else if (message.toLowerCase().includes("route") || message.toLowerCase().includes("where")) {
+                    return "There's a nice 5k loop around the park that has good shade. We could start with that and build up to longer routes.";
+                } else if (message.toLowerCase().includes("gear") || message.toLowerCase().includes("shoes")) {
+                    return "I need to get new running shoes actually. Want to check out that running store downtown this week? They do gait analysis.";
+                } else {
+                    return "Having a running buddy will definitely help me stay motivated, i'm actually really looking forward to getting back into shape with a pal!";
+                }
+            } else if (nodeId === "node4") { // Heather and tech job
+                if (message.toLowerCase().includes("company") || message.toLowerCase().includes("work")) {
+                    return "I'm at HealthTech Solutions - they're a growing startup with about 80 employees. The work culture is fantastic so far!";
+                } else if (message.toLowerCase().includes("pay") || message.toLowerCase().includes("salary")) {
+                    return "The compensation is definitely better than my last role. The benefits are great too - unlimited PTO and they actually encourage you to use it!";
+                } else if (message.toLowerCase().includes("skills") || message.toLowerCase().includes("learn")) {
+                    return "I'm learning DevOps. There's a steep learning curve but my team has been super supportive.";
+                } else {
+                    return "We should catch up over coffee soon! I'd love to tell you more about the projects we're working on - some really innovative healthcare solutions.";
+                }
             } else {
+                // Generic responses for new nodes
+                const responses = [
+                    "That's an interesting point! I hadn't thought about it that way before.",
+                    "Thanks for sharing that with me. It's helpful to get your perspective.",
+                    "I'd love to discuss this more next time we meet up!",
+                    "That gives me something to think about. What else is on your mind?",
+                    "That's a great idea! Let's make plans to do that soon."
+                ];
                 return responses[Math.floor(Math.random() * responses.length)];
             }
         }
